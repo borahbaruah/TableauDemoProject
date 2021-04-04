@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Tableau Server REST API Demo</title>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/users.css">
+</head>
+<body>
+	<div class="container">
+		<div class="row" id="headerRow">
+			<div class="page-header text-center">
+				<h1>Tableau Server REST API Demo</h1>
+				<h3>Project List</h3>
+				<a href="/"><h4>Main</h4></a>
+			</div>
+		</div>
+		<div class="row" id="bodyRow">
+			<div class="col-md-6 col-md-offset-3">
+				<table class="table">
+					<tr>
+						<th>Project Name</th>
+						<th>Project Id</th>
+					</tr>
+					<% for(var project in projectIDs) { %>
+						<tr>
+							<td><a href="worksheet.html" target="_blank"><%=project%></a></td>
+							<td><%=projectIDs[project]%></td>
+						</tr>
+					<% } %>
+				</table>
+			</div>
+		</div>
+		
+		<div class="row" id="debug row">
+			<% if(err) { %>
+				<h3>Error: <%=err%></h3>
+			<% } %>
+		</div>
+		
+	</div>
+</body>
+</html>
