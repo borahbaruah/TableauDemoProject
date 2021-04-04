@@ -1,8 +1,8 @@
 
-var SERVERURL = "44.192.94.127";
+var SERVERURL = "xxxx";
 //var SITE = "010f5caf-d924-4513-9b40-3350bbc2760c";
-var ADMIN_USER_NAME = "admin";
-var ADMIN_PW = "admin";
+var ADMIN_USER_NAME = "xxx";
+var ADMIN_PW = "xxx";
 
 //Loading of Module Dependencies
 var XMLWriter = require('xml-writer');
