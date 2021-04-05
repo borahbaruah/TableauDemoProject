@@ -1,8 +1,13 @@
 
-var SERVERURL = "xxxx";
-//var SITE = "010f5caf-d924-4513-9b40-3350bbc2760c";
-var ADMIN_USER_NAME = "xxx";
-var ADMIN_PW = "xxx";
+const http = require('http');
+const https = require('https');
+const fs = require('fs');
+const querystring = require('querystring');
+
+var SERVERURL = "44.192.94.127";
+var SITE = ""; // "010f5caf-d924-4513-9b40-3350bbc2760c";
+var ADMIN_USER_NAME = "admin";
+var ADMIN_PW = "admin";
 
 //Loading of Module Dependencies
 var XMLWriter = require('xml-writer');
@@ -144,7 +149,7 @@ app.post('/users', function(req,res) {
 				res.redirect('/');
 			} else {
 				var bodyXML = new jsxml.XML(body);
-				req.session.SiteID = bodyXML.child('site').attribute("id").getValue();
+				//req.session.SiteID = bodyXML.child('site').attribute("id").getValue();
 				console.log("site id: " + req.session.SiteID);
 			}
 			// OK. We have the site, and we've stored it in the session cookie, now we add our new user to that site.
@@ -272,6 +277,76 @@ app.get('/users/:user', function(req, res) {
 		}
 	);	
 });
+
+var tableau = require('./functions/tableau');
+
+app.get('/trustedticket1', function(req,res) {
+	tableau.getTicket(SERVERURL, 'DemoSite', 'admin', '', function(obj) {
+        if (obj.result == "success") {
+        	console.log("We got the ticket ==>" + obj.result)
+          res.send({
+            result: "Success",
+            ticket: obj.ticket
+          });
+        } else {
+          res.send({
+            result: "Error2",
+            error: obj.error
+          });
+        }
+      });
+});
+
+app.get('/trustedticket', function(req,res) {
+
+	let url = new URL('http://' + SERVERURL + '/trusted');
+    let body = {
+        username: 'baruah_m2001@yahoo.com'
+    };
+    body['target_site'] = 'DemoSite';
+    
+
+    let postData = querystring.stringify(body);
+    console.log(' => POST ' + url + ' ' + postData);
+
+    let module = http;
+    if (url.protocol === 'https:') {
+        module = https;
+    }
+
+     req = module.request({
+        method: 'POST',
+        url: 'http://' + SERVERURL + '/trusted',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+    	form: postData
+    }, function (tableauServerResponse) {
+        let ticketData = '';
+        tableauServerResponse.on('data', function (chunk) {
+            ticketData += chunk;
+        });
+
+        tableauServerResponse.on('end', function () {
+            let contents = JSON.stringify(
+                {
+                    ticket: ticketData
+                });
+            res.writeHead(200, {'Content-Type': 'application/json'});
+            res.end(contents + '\n');
+            console.log('200 POST /api - ' + contents);
+        });
+    });
+
+    req.on('error', function (error) {
+        console.log('ERROR: ' + error);
+    });
+
+    req.write(postData);
+    req.end();
+					
+});
+
 
 //Start this thing
 var port = Number(process.env.PORT || 7200);
