@@ -280,7 +280,33 @@ app.get('/users/:user', function(req, res) {
 
 var tableau = require('./functions/tableau');
 var tickets = {};
-app.get('/trustedticket1', function(req,res) {
+app.get('/displayviz', function(req,res) {
+
+	//get the ticket
+	//ticket = '6EzZ0WZxTeK1NzdM2pi_jg==:JbSCvqIruLDWPHSODHizpGns'
+
+	var ticket = tableau.getTicket(SERVERURL, 'DemoSite', 'admin', '', function(obj) {
+        if (obj.result == "success") {
+        	console.log("We got the ticket ==>" + obj.result)
+          res.render("trustedticket.ejs", {
+				ticket: obj.ticket
+			});
+          res.send({
+            result: "Success",
+            ticket: obj.ticket
+          });
+        } else {
+          res.send({
+            result: "Error2",
+            error: obj.error
+          });
+        }
+      });
+
+	
+	});	
+
+	/****
 	tableau.getTicket(SERVERURL, 'DemoSite', 'admin', '', function(obj) {
         if (obj.result == "success") {
         	console.log("We got the ticket ==>" + obj.result)
@@ -298,6 +324,7 @@ app.get('/trustedticket1', function(req,res) {
           });
         }
       });
+      ****/
 });
 
 app.get('/trustedticket2', function(req,res) {
@@ -367,6 +394,55 @@ app.get('/trustedticket', function(req,res) {
 					
 });
 
+function processApiResponse(res, tableauServer, username, site) {
+    let url = new URL(tableauServer + '/trusted');
+    let body = {
+        username: username
+    };
+    if (site) {
+        body['target_site'] = site;
+    }
+
+    let postData = querystring.stringify(body);
+    console.log(' => POST ' + url + ' ' + postData);
+
+    let module = http;
+    if (url.protocol === 'https:') {
+        module = https;
+    }
+
+    let req = module.request({
+        method: 'POST',
+        hostname: url.hostname,
+        path: '/trusted',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }, function (tableauServerResponse) {
+        let ticketData = '';
+        tableauServerResponse.on('data', function (chunk) {
+            ticketData += chunk;
+        });
+
+        tableauServerResponse.on('end', function () {
+            let contents = JSON.stringify(
+                {
+                    ticket: ticketData
+                    
+                });
+            res.writeHead(200, {'Content-Type': 'application/json'});
+            res.end(contents + '\n');
+            console.log('200 POST /api - ' + contents);
+        });
+    });
+
+    req.on('error', function (error) {
+        console.log('ERROR: ' + error);
+    });
+
+    req.write(postData);
+    req.end();
+}
 
 //Start this thing
 var port = Number(process.env.PORT || 7200);
