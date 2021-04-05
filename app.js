@@ -279,8 +279,28 @@ app.get('/users/:user', function(req, res) {
 });
 
 var tableau = require('./functions/tableau');
-
+var tickets = {};
 app.get('/trustedticket1', function(req,res) {
+	tableau.getTicket(SERVERURL, 'DemoSite', 'admin', '', function(obj) {
+        if (obj.result == "success") {
+        	console.log("We got the ticket ==>" + obj.result)
+          res.render("trustedticket.ejs", {
+				ticket: obj.ticket
+			});
+          res.send({
+            result: "Success",
+            ticket: obj.ticket
+          });
+        } else {
+          res.send({
+            result: "Error2",
+            error: obj.error
+          });
+        }
+      });
+});
+
+app.get('/trustedticket2', function(req,res) {
 	tableau.getTicket(SERVERURL, 'DemoSite', 'admin', '', function(obj) {
         if (obj.result == "success") {
         	console.log("We got the ticket ==>" + obj.result)
@@ -301,7 +321,7 @@ app.get('/trustedticket', function(req,res) {
 
 	let url = new URL('http://' + SERVERURL + '/trusted');
     let body = {
-        username: 'baruah_m2001@yahoo.com'
+        username: 'admin'
     };
     body['target_site'] = 'DemoSite';
     
@@ -316,7 +336,7 @@ app.get('/trustedticket', function(req,res) {
 
      req = module.request({
         method: 'POST',
-        url: 'http://' + SERVERURL + '/trusted',
+        url: url,
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         },

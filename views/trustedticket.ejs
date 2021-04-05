@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Tableau Server REST API Demo</title>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/users.css">
+</head>
+<body>
+	<div class="container">
+		<div class="row" id="headerRow">
+			<div class="page-header text-center">
+				<h1>Trusted Ticket Result</h1>
+				
+			</div>
+		</div>
+		<div class="row" id="bodyRow">
+			<div class="col-md-6 col-md-offset-3">
+				<table class="table">
+					<tr>
+						<th>Ticket Id</th>
+						
+					</tr>
+					<% for(var ticket in tickets) { %>
+						<tr>
+							<td><a href="worksheet.html" target="_blank"><%=ticket%></a></td>
+							
+						</tr>
+					<% } %>
+				</table>
+			</div>
+		</div>
+		
+		
+		<div class="row" id="debug row">
+			<% if(err) { %>
+				<h3>Error: <%=err%></h3>
+			<% } %>
+		</div>
+		
+	</div>
+</body>
+</html>
